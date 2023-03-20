@@ -81,6 +81,23 @@ def obstacle_check(node):
     return status
 
 
+def check_goal(current, goal_allowance):
+    
+    dt = dist((current[0], current[1]), (goal_x, goal_y))   
+
+    if goal_allowance in range(1,4):
+        compare_with_this = 1.5
+    elif goal_allowance in range(4,7):
+        compare_with_this = 3
+    else:
+        compare_with_this = 5
+          
+    if dt < compare_with_this:
+        return True
+    else:
+        return False
+    
+
 def round_thresh(val):
 
     if val % 0.5 != 0:
@@ -309,3 +326,51 @@ def two_time_theta_down(node):
 
 tree=[]
 graph_dict = {}
+
+while True:
+    
+    current_node = open_list.get() 
+    tree.append(current_node[3])
+    if current_node[3] in closed_list: 
+        continue
+
+    x_visited.append(current_node[3][0]) 
+    y_visited.append(current_node[3][1])
+
+    closed_list[current_node[3]] = (current_node[2]) 
+    
+    graph_dict[current_node[3]] = []
+
+    if check_goal(current_node[3], L_step_size): 
+        goal_pose1 = current_node[3]
+        print("Mission Accomplished...Goal Reached")
+        print(current_node)
+        break
+        
+    else:
+
+        two_time_theta_up(current_node)
+        one_time_theta_up(current_node)
+        straight(current_node)
+        one_time_theta_down(current_node)
+        two_time_theta_down(current_node)        
+
+#backtracing the shortest path
+shortest_planned_path=[]
+check_this_node = goal_pose1
+while check_this_node != start_pose:
+    shortest_planned_path.append(check_this_node)
+    check_this_node = closed_list[check_this_node]
+shortest_planned_path.append(start_pose)
+shortest_planned_path.reverse()
+
+x_shortest = [] 
+y_shortest = []
+for i in range(len(shortest_planned_path)):
+    x_shortest.append(shortest_planned_path[i][0])
+    y_shortest.append(shortest_planned_path[i][1])
+
+end = time.time()
+print(f'Time needed for the algorithm: {end - start}\n')
+print('\n')
+
