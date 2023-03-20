@@ -74,7 +74,7 @@ Enter Robot radius:
 Here user has to enter value of robot's radius for obstacle avoidance.
 
 ```
-Note: Make sure the clearances i.e., robot radius and obstacle clearance doesn't add up to block the right end of the map or else it will run into an infinte loop since it will keep on computing childrens through action set.
+Note: Make sure the clearances i.e., robot radius and obstacle clearance doesn't add up to block the right end of the map since it will keep on computing childrens through action set.
 ```
 
 ```
