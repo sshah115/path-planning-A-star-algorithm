@@ -44,7 +44,7 @@ def genMap():
     cv.rectangle(arena, (100,0), (150,100), white, obsClea)
     cv.rectangle(arena, (100,150), (150,250), blue, -1)
     cv.rectangle(arena, (100,150), (150, 250), white, obsClea)
-    cv.rectangle(arena, (4, 4), (596, 246), white, obsClea)
+    cv.rectangle(arena, (-1, -1), (601, 251), white, obsClea)
 
     # Drawing all polygon shaped obstacles
     hexPts = np.array([[300,50], [365, 87.5], [365,162.5], 
@@ -71,9 +71,9 @@ def obstacle_check(node):
 
     yPt = int(node[0]/thresh_for_grid)
   
-    if np.all(canvas[xPt, yPt] == [0, 0, 0]):
+    if canvas[xPt, yPt].any() == np.array([0, 0, 0]).all():
         status = False
-    elif np.all(canvas[xPt, yPt] == [255, 255, 255]):
+    elif canvas[xPt, yPt].all() == np.array([255, 255, 255]).all():
         status = True
     else:
         status = True     
