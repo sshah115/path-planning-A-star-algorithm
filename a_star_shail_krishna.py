@@ -72,16 +72,20 @@ def obstacle_check(node):
     yPt = int(node[0]/thresh_for_grid)
   
     if canvas[xPt, yPt].any() == np.array([0, 0, 0]).all():
-        print("Processing!!!")
         status = False
     elif canvas[xPt, yPt].all() == np.array([255, 255, 255]).all():
-        print("The goal coordinate is on border")
         status = True
     else:
-        print("The goal coordinate is inside obstacle")
         status = True       
 
     return status
+
+
+def round_thresh(val):
+
+    if val % 0.5 != 0:
+        val = np.round(val/thresh_for_grid)*thresh_for_grid
+    return val
 
 #threshold for the grid
 thresh_for_grid = 0.5
@@ -90,13 +94,64 @@ thresh_for_grid = 0.5
 
 v= np.zeros((1200, 500, 12))
 
-#Obstacle inputs
-obstacle_real = 10
-radius_robot = 10
 
+obstacle_real= int(round_thresh(float(input("\nEnter obstacle clearance: \n"))))
+
+print("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+
+radius_robot = int(round_thresh(float(input("\nEnter Robot radius: \n"))))
+
+print("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+
+#Total clearance taking into account robot radius and clearance.
 obsClea = obstacle_real + radius_robot
+
 
 #Generating map
 canvas = genMap()
 
 canvas = cv.flip(canvas, 0)
+
+
+thresh = 0.5
+deg_thresh = 30
+#Getting home position
+home_x = round_thresh(float(input("Hey!! Where to start? Please enter home 'x' coordinate:  \n")))
+home_y = round_thresh(float(input("\nPlease enter home 'y' coordinate: \n")))
+home_loc = (home_x, home_y)
+while obstacle_check(home_loc):
+    print("\nThe entered value is in the obstacle. Please enter new values\n")
+    home_x = round_thresh(float(input("\nHey!! Where to start? Please enter home 'x' coordinate:  \n")))
+    home_y = round_thresh(float(input("\nPlease enter home 'y' coordinate: \n")))
+    home_loc = (home_x, home_y)
+home_theta = int(input("\nGive home orientation:  \n"))
+while home_theta % deg_thresh != 0:
+    print("\nPleaes entere theta as multiple of 30 degrees.Please enter new values\n")
+    home_theta = int(input("\nGive home orientation:  \n"))
+
+print("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+
+#Getting Goal Position
+
+goal_x= round_thresh(float(input("\nNow give the goal 'x' coordinate \n")))
+goal_y = round_thresh(float(input("\nNow give the goal 'y' coordinate \n")))
+goal_loc = (goal_x, goal_y)
+while obstacle_check(goal_loc):
+    print("\nThe entered value is in the obstacle. Please enter new values\n")
+    goal_x= round_thresh(float(input("\nNow give the goal 'x' coordinate \n")))
+    goal_y = round_thresh(float(input("\nNow give the goal 'y' coordinate \n")))
+    goal_loc = (goal_x, goal_y)
+    
+goal_theta = int(input("\nGive goal orientation:  \n"))
+while goal_theta % deg_thresh != 0:
+    print("\nPleaes entere theta as multiple of 30 degrees.Please enter new values\n")
+    goal_theta = int(input("\nGive goal orientation:  \n"))
+
+print("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+
+L_step_size = round_thresh(float(input("\nEnter Step size of the robot(1 <= L <= 10): \n")))
+while L_step_size not in range(1,11):
+    print("\nThe entered the step size between 1 to 10. \n")
+    L_step_size = round_thresh(float(input("\nEnter Step size of the robot(1 <= L <= 10): \n")))
+
+print("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")  
