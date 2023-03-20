@@ -374,3 +374,32 @@ end = time.time()
 print(f'Time needed for the algorithm: {end - start}\n')
 print('\n')
 
+fig, ax = plt.subplots(figsize=(6,2.5))
+
+bottom_rectangle = patch.Rectangle((100, 150), 50, 100, linewidth=1, edgecolor='g', facecolor='g')
+top_rectangle = patch.Rectangle((100, 0), 50, 100, linewidth=1, edgecolor='g', facecolor='g')
+hexagon_obstacle = patch.RegularPolygon((300, 125), 6, 75, linewidth=1, edgecolor='g', facecolor='g')
+tri_obstacle = patch.Polygon([(460, 25), (460, 225), (510, 125)], linewidth=1, edgecolor='g', facecolor='g')
+
+ax.add_patch(bottom_rectangle)
+ax.add_patch(top_rectangle)
+ax.add_patch(hexagon_obstacle)
+ax.add_patch(tri_obstacle)
+
+#Plotting the path
+plt.xlabel('X Axis')
+plt.ylabel('Y Axis')
+plt.title("Visualising Exploration")
+plt.axis([0 , 600 , 0 ,250])
+
+for key, value in graph_dict.items() :
+    for index in value:
+        plt.plot([key[0], index[0]],[key[1], index[1]], c='red')
+        plt.pause(0.00005)
+
+plt.title("Shortest Path traced by Point Robot")
+for i in range(len(x_shortest)-1):
+    plt.plot((x_shortest[i],x_shortest[i+1]) , (y_shortest[i],y_shortest[i+1]) , c='yellow')
+    plt.pause(0.00005)
+
+plt.show()
