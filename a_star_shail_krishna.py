@@ -155,3 +155,157 @@ while L_step_size not in range(1,11):
     L_step_size = round_thresh(float(input("\nEnter Step size of the robot(1 <= L <= 10): \n")))
 
 print("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")  
+
+x_visited = [] 
+y_visited = []
+
+start = time.time()
+
+start_pose = (home_x, home_y, home_theta)
+goal_pose = (goal_x, goal_y, goal_theta)
+
+c2c = 0
+parent_pose = None
+total_cost = 0
+adam_node = (total_cost,c2c,(parent_pose),(start_pose))
+open_list = PriorityQueue()
+open_list.put(adam_node)
+
+closed_list = {} 
+
+
+global tree
+
+def two_time_theta_up(node):
+
+    node_in_action = copy.deepcopy(node)
+    c2c_moved = node_in_action[1] + 1
+    current_parent = node_in_action[3]
+
+    updated_theta = ((node_in_action[3][2]) + 60) % 360
+    updated_x = round_thresh(node_in_action[3][0]+(L_step_size*np.cos(np.radians(updated_theta))))
+    updated_y = round_thresh(node_in_action[3][1]+(L_step_size*np.sin(np.radians(updated_theta))))
+      
+    c2g = dist((updated_x, updated_y), (goal_x, goal_y))
+    total_cost = c2c_moved + c2g
+
+    current_child = (updated_x, updated_y, updated_theta)
+
+    if v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] == 0:
+        v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] = 1
+        if obstacle_check((current_child[0],current_child[1])) == False:
+            if current_child not in closed_list:
+                tree.append(current_child)
+                graph_dict[current_parent].append(current_child)
+                for i in range(0,(open_list.qsize())):
+                    if open_list.queue[i][3] == current_child and open_list.queue[i][0] > total_cost:
+                        open_list.queue[i][2] == current_parent
+                open_list.put((total_cost, c2c_moved, current_parent, current_child))
+
+def one_time_theta_up(node):
+
+    node_in_action = copy.deepcopy(node)
+    c2c_moved = node_in_action[1] + 1
+    current_parent = node_in_action[3]
+
+    updated_theta = ((node_in_action[3][2]) + 30)  % 360
+    updated_x = round_thresh(node_in_action[3][0]+(L_step_size*np.cos(np.radians(updated_theta))))
+    updated_y = round_thresh(node_in_action[3][1]+(L_step_size*np.sin(np.radians(updated_theta))))
+      
+    c2g = dist((updated_x, updated_y), (goal_x, goal_y))
+    total_cost = c2c_moved + c2g
+
+    current_child = (updated_x, updated_y, updated_theta)
+
+    if v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] == 0:
+        v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] = 1
+        if obstacle_check((current_child[0],current_child[1])) == False:
+            if current_child not in closed_list:
+                tree.append(current_child)
+                graph_dict[current_parent].append(current_child)
+                for i in range(0,(open_list.qsize())):
+                    if open_list.queue[i][3] == current_child and open_list.queue[i][0] > total_cost:
+                        open_list.queue[i][2] == current_parent
+                open_list.put((total_cost, c2c_moved, current_parent, current_child))
+
+def straight(node):
+
+    node_in_action = copy.deepcopy(node)
+    c2c_moved = node_in_action[1] + 1
+    current_parent = node_in_action[3]
+
+    updated_theta = ((node_in_action[3][2]))  % 360
+    updated_x = round_thresh(node_in_action[3][0]+(L_step_size*np.cos(np.radians(updated_theta))))
+    updated_y = round_thresh(node_in_action[3][1]+(L_step_size*np.sin(np.radians(updated_theta))))
+      
+    c2g = dist((updated_x, updated_y), (goal_x, goal_y))
+    total_cost = c2c_moved + c2g
+
+    current_child = (updated_x, updated_y, updated_theta)
+
+    if v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] == 0:
+        v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] = 1
+        if obstacle_check((current_child[0],current_child[1])) == False:
+            if current_child not in closed_list:
+                tree.append(current_child)
+                graph_dict[current_parent].append(current_child)
+                for i in range(0,(open_list.qsize())):
+                    if open_list.queue[i][3] == current_child and open_list.queue[i][0] > total_cost:
+                        open_list.queue[i][2] == current_parent
+                open_list.put((total_cost, c2c_moved, current_parent, current_child))
+
+def one_time_theta_down(node):
+
+    node_in_action = copy.deepcopy(node)
+    c2c_moved = node_in_action[1] + 1
+    current_parent = node_in_action[3]
+
+    updated_theta = ((node_in_action[3][2])- 30) %360
+    updated_x = round_thresh(node_in_action[3][0]+(L_step_size*np.cos(np.radians(updated_theta))))
+    updated_y = round_thresh(node_in_action[3][1]+(L_step_size*np.sin(np.radians(updated_theta))))
+      
+    c2g = dist((updated_x, updated_y), (goal_x, goal_y))
+    total_cost = c2c_moved + c2g
+
+    current_child = (updated_x, updated_y, updated_theta)
+
+    if v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] == 0:
+        v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] = 1
+        if obstacle_check((current_child[0],current_child[1])) == False:
+            if current_child not in closed_list:
+                tree.append(current_child)
+                graph_dict[current_parent].append(current_child)
+                for i in range(0,(open_list.qsize())):
+                    if open_list.queue[i][3] == current_child and open_list.queue[i][0] > total_cost:
+                        open_list.queue[i][2] == current_parent
+                open_list.put((total_cost, c2c_moved, current_parent, current_child))
+
+def two_time_theta_down(node):
+
+    node_in_action = copy.deepcopy(node)
+    c2c_moved = node_in_action[1] + 1
+    current_parent = node_in_action[3]
+
+    updated_theta = ((node_in_action[3][2]) - 60) %360
+    
+    updated_x = round_thresh(node_in_action[3][0]+(L_step_size*np.cos(np.radians(updated_theta))))
+    updated_y = round_thresh(node_in_action[3][1]+(L_step_size*np.sin(np.radians(updated_theta))))
+      
+    c2g = dist((updated_x, updated_y), (goal_x, goal_y))
+    total_cost = c2c_moved + c2g
+
+    current_child = (updated_x, updated_y, updated_theta)
+
+    if v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] == 0:
+        v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] = 1
+        if obstacle_check((current_child[0],current_child[1])) == False:
+            if current_child not in closed_list:
+                tree.append(current_child)
+                graph_dict[current_parent].append(current_child)
+                for i in range(0,(open_list.qsize())):
+                    if open_list.queue[i][3] == current_child and open_list.queue[i][0] > total_cost:
+                        open_list.queue[i][2] == current_parent
+                open_list.put((total_cost, c2c_moved, current_parent, current_child))
+
+tree=[]
+graph_dict = {}
