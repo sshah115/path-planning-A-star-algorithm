@@ -71,12 +71,12 @@ def obstacle_check(node):
 
     yPt = int(node[0]/thresh_for_grid)
   
-    if canvas[xPt, yPt].any() == np.array([0, 0, 0]).all():
+    if np.all(canvas[xPt, yPt] == [0, 0, 0]):
         status = False
-    elif canvas[xPt, yPt].all() == np.array([255, 255, 255]).all():
+    elif np.all(canvas[xPt, yPt] == [255, 255, 255]):
         status = True
     else:
-        status = True       
+        status = True     
 
     return status
 
@@ -90,7 +90,7 @@ def check_goal(current, goal_allowance):
     elif goal_allowance in range(4,7):
         compare_with_this = 3
     else:
-        compare_with_this = 5
+        compare_with_this = 4
           
     if dt < compare_with_this:
         return True
@@ -128,7 +128,6 @@ obsClea = obstacle_real + radius_robot
 canvas = genMap()
 
 canvas = cv.flip(canvas, 0)
-
 
 thresh = 0.5
 deg_thresh = 30
@@ -173,6 +172,8 @@ while L_step_size not in range(1,11):
 
 print("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")  
 
+print("\nBe patient!!! I am coputing the shortest path!! \n")
+
 x_visited = [] 
 y_visited = []
 
@@ -189,9 +190,6 @@ open_list = PriorityQueue()
 open_list.put(adam_node)
 
 closed_list = {} 
-
-
-global tree
 
 def two_time_theta_up(node):
 
@@ -212,7 +210,6 @@ def two_time_theta_up(node):
         v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] = 1
         if obstacle_check((current_child[0],current_child[1])) == False:
             if current_child not in closed_list:
-                tree.append(current_child)
                 graph_dict[current_parent].append(current_child)
                 for i in range(0,(open_list.qsize())):
                     if open_list.queue[i][3] == current_child and open_list.queue[i][0] > total_cost:
@@ -238,7 +235,6 @@ def one_time_theta_up(node):
         v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] = 1
         if obstacle_check((current_child[0],current_child[1])) == False:
             if current_child not in closed_list:
-                tree.append(current_child)
                 graph_dict[current_parent].append(current_child)
                 for i in range(0,(open_list.qsize())):
                     if open_list.queue[i][3] == current_child and open_list.queue[i][0] > total_cost:
@@ -264,7 +260,6 @@ def straight(node):
         v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] = 1
         if obstacle_check((current_child[0],current_child[1])) == False:
             if current_child not in closed_list:
-                tree.append(current_child)
                 graph_dict[current_parent].append(current_child)
                 for i in range(0,(open_list.qsize())):
                     if open_list.queue[i][3] == current_child and open_list.queue[i][0] > total_cost:
@@ -290,7 +285,6 @@ def one_time_theta_down(node):
         v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] = 1
         if obstacle_check((current_child[0],current_child[1])) == False:
             if current_child not in closed_list:
-                tree.append(current_child)
                 graph_dict[current_parent].append(current_child)
                 for i in range(0,(open_list.qsize())):
                     if open_list.queue[i][3] == current_child and open_list.queue[i][0] > total_cost:
@@ -317,20 +311,17 @@ def two_time_theta_down(node):
         v[int(updated_x/thresh)][int(updated_y/thresh)][int(updated_theta/deg_thresh)] = 1
         if obstacle_check((current_child[0],current_child[1])) == False:
             if current_child not in closed_list:
-                tree.append(current_child)
                 graph_dict[current_parent].append(current_child)
                 for i in range(0,(open_list.qsize())):
                     if open_list.queue[i][3] == current_child and open_list.queue[i][0] > total_cost:
                         open_list.queue[i][2] == current_parent
                 open_list.put((total_cost, c2c_moved, current_parent, current_child))
 
-tree=[]
 graph_dict = {}
 
 while True:
     
     current_node = open_list.get() 
-    tree.append(current_node[3])
     if current_node[3] in closed_list: 
         continue
 
